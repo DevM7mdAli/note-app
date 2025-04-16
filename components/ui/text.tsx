@@ -1,4 +1,4 @@
-import cn from "@/libs/utils";
+import cn from "@/lib/utils";
 import { Text, TextProps } from "react-native";
 
 interface TextFontProps extends TextProps {
