@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert, Text } from 'react-native';
+import { View, ScrollView, Alert, Text } from 'react-native';
 import { Button, Input } from '@rneui/themed';
 import { Note } from './Note';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -70,15 +70,15 @@ export function UserDashboard() {
 
   if (isLoading) {
     return (
-      <View style={styles.centered}>
-        <Text>Loading notes...</Text>
+      <View className="flex-1 items-center justify-center">
+        <Text className="text-base text-gray-600">Loading notes...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputContainer}>
+    <View className="flex-1 p-4">
+      <View className="mb-4">
         {editingNote ? (
           <>
             <Input
@@ -87,17 +87,27 @@ export function UserDashboard() {
               onChangeText={(text) => setEditingNote({ ...editingNote, text })}
               multiline
             />
-            <View style={styles.editButtons}>
+            <View className="flex-row justify-end gap-2">
               <Button
                 title="Cancel"
                 onPress={() => setEditingNote(null)}
-                buttonStyle={styles.cancelButton}
+                buttonStyle={{
+                  backgroundColor: '#6b7280',
+                  borderRadius: 8,
+                  paddingHorizontal: 20,
+                  paddingVertical: 8
+                }}
               />
               <Button
                 title="Save"
                 onPress={handleUpdate}
                 loading={updateNote.isPending}
-                buttonStyle={styles.saveButton}
+                buttonStyle={{
+                  backgroundColor: '#10b981',
+                  borderRadius: 8,
+                  paddingHorizontal: 20,
+                  paddingVertical: 8
+                }}
               />
             </View>
           </>
@@ -113,13 +123,17 @@ export function UserDashboard() {
               title="Create Note"
               onPress={handleCreate}
               loading={createNote.isPending}
-              buttonStyle={styles.createButton}
+              buttonStyle={{
+                backgroundColor: '#3b82f6',
+                borderRadius: 8,
+                paddingVertical: 8
+              }}
             />
           </>
         )}
       </View>
 
-      <ScrollView style={styles.notesList}>
+      <ScrollView className="flex-1">
         {notes?.map((note) => (
           <Note
             key={note.id}
@@ -133,40 +147,3 @@ export function UserDashboard() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  inputContainer: {
-    marginBottom: 16,
-  },
-  editButtons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 8,
-  },
-  notesList: {
-    flex: 1,
-  },
-  createButton: {
-    backgroundColor: '#3b82f6',
-    borderRadius: 8,
-  },
-  saveButton: {
-    backgroundColor: '#10b981',
-    borderRadius: 8,
-    paddingHorizontal: 20,
-  },
-  cancelButton: {
-    backgroundColor: '#6b7280',
-    borderRadius: 8,
-    paddingHorizontal: 20,
-  },
-});

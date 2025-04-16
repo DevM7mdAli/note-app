@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
-import { Alert, Linking, StyleSheet, View } from 'react-native'
+import { Alert, Linking, View } from 'react-native'
 import { supabase } from '../lib/supabase'
 import { Button, Input } from '@rneui/themed'
+
 export default function Auth() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+
   async function signInWithEmail() {
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({
@@ -17,8 +19,8 @@ export default function Auth() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
+    <View className="mt-10 p-3">
+      <View className="py-1 mt-5 self-stretch">
         <Input
           label="Email"
           leftIcon={{ type: 'font-awesome', name: 'envelope' }}
@@ -28,7 +30,7 @@ export default function Auth() {
           autoCapitalize={'none'}
         />
       </View>
-      <View style={styles.verticallySpaced}>
+      <View className="py-1 self-stretch">
         <Input
           label="Password"
           leftIcon={{ type: 'font-awesome', name: 'lock' }}
@@ -39,26 +41,30 @@ export default function Auth() {
           autoCapitalize={'none'}
         />
       </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button title="Sign in" disabled={loading} onPress={() => signInWithEmail()} />
+      <View className="py-1 mt-5 self-stretch">
+        <Button 
+          title="Sign in" 
+          disabled={loading} 
+          onPress={() => signInWithEmail()} 
+          buttonStyle={{
+            backgroundColor: '#3b82f6',
+            borderRadius: 8,
+            paddingVertical: 12
+          }}
+        />
       </View>
-      <View style={styles.verticallySpaced}>
-        <Button title="Sign up" disabled={loading} onPress={() => Linking.openURL('http://localhost:3000/auth/sign-up')} />
+      <View className="py-1 self-stretch">
+        <Button 
+          title="Sign up" 
+          disabled={loading} 
+          onPress={() => Linking.openURL('http://localhost:3000/auth/sign-up')} 
+          buttonStyle={{
+            backgroundColor: '#6b7280',
+            borderRadius: 8,
+            paddingVertical: 12
+          }}
+        />
       </View>
     </View>
   )
 }
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: 'stretch',
-  },
-  mt20: {
-    marginTop: 20,
-  },
-})

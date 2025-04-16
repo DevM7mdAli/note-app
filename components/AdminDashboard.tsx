@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { Note as NoteComponent } from './Note';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notesApi } from '../lib/api-client';
@@ -31,18 +31,18 @@ export function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <View style={styles.centered}>
-        <Text>Loading notes...</Text>
+      <View className="flex-1 items-center justify-center">
+        <Text className="text-base text-gray-600">Loading notes...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Admin Dashboard</Text>
-      <Text style={styles.subtitle}>Manage all user notes</Text>
+    <View className="flex-1 p-4">
+      <Text className="text-2xl font-bold mb-1">Admin Dashboard</Text>
+      <Text className="text-base text-gray-500 mb-4">Manage all user notes</Text>
       
-      <ScrollView style={styles.notesList}>
+      <ScrollView className="flex-1">
         {notes?.map((note) => (
           <NoteComponent
             key={note.id}
@@ -64,28 +64,3 @@ export function AdminDashboard() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 16,
-  },
-  notesList: {
-    flex: 1,
-  },
-});

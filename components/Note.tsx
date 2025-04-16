@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import { Button } from '@rneui/themed';
 
 interface NoteProps {
@@ -23,64 +23,23 @@ export function Note({ id, text, author, onDelete, onEdit, isAdmin }: NoteProps)
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.noteText}>{text}</Text>
-      {author && <Text style={styles.authorText}>By: {author}</Text>}
-      <View style={styles.buttonContainer}>
+    <View className="bg-white rounded-lg p-4 mb-3 shadow-sm">
+      <Text className="text-base mb-2">{text}</Text>
+      {author && <Text className="text-sm text-gray-500 mb-3">By: {author}</Text>}
+      <View className="flex-row justify-end gap-2">
         <Button
           title="Edit"
           onPress={() => onEdit(id)}
-          buttonStyle={styles.editButton}
-          titleStyle={styles.buttonText}
+          buttonStyle={{ backgroundColor: '#3b82f6', borderRadius: 6, paddingHorizontal: 12, paddingVertical: 8 }}
+          titleStyle={{ fontSize: 14 }}
         />
         <Button
           title="Delete"
           onPress={handleDelete}
-          buttonStyle={styles.deleteButton}
-          titleStyle={styles.buttonText}
+          buttonStyle={{ backgroundColor: '#ef4444', borderRadius: 6, paddingHorizontal: 12, paddingVertical: 8 }}
+          titleStyle={{ fontSize: 14 }}
         />
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  noteText: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  authorText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 12,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 8,
-  },
-  editButton: {
-    backgroundColor: '#3b82f6',
-    borderRadius: 6,
-    paddingHorizontal: 12,
-  },
-  deleteButton: {
-    backgroundColor: '#ef4444',
-    borderRadius: 6,
-    paddingHorizontal: 12,
-  },
-  buttonText: {
-    fontSize: 14,
-  },
-});
