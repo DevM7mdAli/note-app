@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { Note as NoteComponent } from './Note';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notesApi } from '../lib/api-client';
+import { Input } from '@rneui/themed';
+import Button from './ui/button';
 
 export function AdminDashboard() {
+  const [editingNote, setEditingNote] = useState<{ id: string; text: string } | null>(null);
   const queryClient = useQueryClient();
 
   // Fetch all notes
@@ -42,6 +45,36 @@ export function AdminDashboard() {
       <Text className="text-2xl font-bold mb-1">Admin Dashboard</Text>
       <Text className="text-base text-gray-500 mb-4">Manage all user notes</Text>
       
+      {editingNote && (
+        <View className="mb-4">
+          <Input
+            placeholder="Edit note..."
+            value={editingNote.text}
+            onChangeText={(text) => setEditingNote({ ...editingNote, text })}
+            multiline
+          />
+          <View className="flex-row justify-end gap-2">
+            <Button
+              title="Cancel"
+              variant="secondary"
+              onPress={() => setEditingNote(null)}
+            />
+            <Button
+              title="Save"
+              variant="primary"
+              loading={updateNote.isPending}
+              onPress={() => {
+                updateNote.mutate({ 
+                  id: editingNote.id, 
+                  noteText: editingNote.text 
+                });
+                setEditingNote(null);
+              }}
+            />
+          </View>
+        </View>
+      )}
+      
       <ScrollView className="flex-1">
         {notes?.map((note) => (
           <NoteComponent
@@ -53,8 +86,10 @@ export function AdminDashboard() {
             onEdit={(id) => {
               const noteToEdit = notes.find(n => n.id === id);
               if (noteToEdit) {
-                // Handle edit through the API
-                updateNote.mutate({ id, noteText: noteToEdit.note_text });
+                setEditingNote({ 
+                  id, 
+                  text: noteToEdit.note_text 
+                });
               }
             }}
             isAdmin
