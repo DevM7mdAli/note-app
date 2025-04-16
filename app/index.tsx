@@ -2,7 +2,7 @@ import 'react-native-url-polyfill/auto'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import Auth from '../components/Auth'
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 import { Session } from '@supabase/supabase-js'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AdminDashboard } from '../components/AdminDashboard'
@@ -14,12 +14,15 @@ const queryClient = new QueryClient()
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [userRole, setUserRole] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       if (session?.user.id) {
         fetchUserRole(session.user.id)
+      } else {
+        setIsLoading(false)
       }
     })
 
@@ -29,23 +32,40 @@ export default function App() {
         fetchUserRole(session.user.id)
       } else {
         setUserRole(null)
+        setIsLoading(false)
       }
     })
   }, [])
 
   const fetchUserRole = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single()
 
-    if (!error && data) {
-      setUserRole(data.role)
+      if (error) {
+        console.error('Error fetching user role:', error)
+      } else {
+        setUserRole(data?.role || 'user') // Default to 'user' if no role is set
+      }
+    } catch (error) {
+      console.error('Error in fetchUserRole:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const RenderContent = () => {
+    if (isLoading) {
+      return (
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-lg">Loading...</Text>
+        </View>
+      )
+    }
+
     if (!session) {
       return <Auth />
     }
