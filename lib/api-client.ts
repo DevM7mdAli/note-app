@@ -13,14 +13,24 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true // Enable sending cookies
 });
 
-// Add auth interceptor to include the token in every request
+// Add auth interceptor to include the token as a cookie
 api.interceptors.request.use(async (config) => {
   const { data: { session } } = await supabase.auth.getSession();
   if (session?.access_token) {
-    // Pass the token in a cookie named 'sb-access-token' to match Next.js expectations
-    config.headers['Cookie'] = `sb-access-token=${session.access_token}`;
+    const projectRef = process.env.EXPO_PUBLIC_SUPABASE_PROJECT_REF || 'your-project-ref';
+    const cookieValue = encodeURIComponent(JSON.stringify({
+      access_token: session.access_token,
+      token_type: "bearer",
+      expires_in: 3600,
+      expires_at: session.expires_at,
+      refresh_token: session.refresh_token,
+      user: session.user
+    }));
+    
+    config.headers['Cookie'] = `sb-${projectRef}-auth-token=${cookieValue}`;
   }
   return config;
 }, (error) => {
