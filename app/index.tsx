@@ -45,7 +45,7 @@ export default function App() {
     }
   }
 
-  const renderContent = () => {
+  const RenderContent = () => {
     if (!session) {
       return <Auth />
     }
@@ -55,11 +55,15 @@ export default function App() {
         {userRole === 'admin' ? (
           <AdminDashboard />
         ) : (
-          <UserDashboard userId={session.user.id} />
+          <UserDashboard />
         )}
       </QueryClientProvider>
     )
   }
 
-  return <RootSafeView>{renderContent()}</RootSafeView>
+  return (
+    <RootSafeView>
+      <RenderContent />
+    </RootSafeView>
+  )
 }

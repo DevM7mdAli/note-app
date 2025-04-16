@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, Text } from 'react-native';
 import { Button, Input } from '@rneui/themed';
 import { Note } from './Note';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notesApi } from '../lib/api-client';
 
-export function UserDashboard({ userId }: { userId: string }) {
+export function UserDashboard() {
   const [noteText, setNoteText] = useState('');
   const [editingNote, setEditingNote] = useState<{ id: string; text: string } | null>(null);
   const queryClient = useQueryClient();
@@ -23,7 +23,7 @@ export function UserDashboard({ userId }: { userId: string }) {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
       setNoteText('');
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       Alert.alert('Error', error.message);
     },
   });
@@ -35,7 +35,7 @@ export function UserDashboard({ userId }: { userId: string }) {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
       setEditingNote(null);
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       Alert.alert('Error', error.message);
     },
   });
@@ -46,7 +46,7 @@ export function UserDashboard({ userId }: { userId: string }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       Alert.alert('Error', error.message);
     },
   });

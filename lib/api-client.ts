@@ -1,27 +1,11 @@
 import axios from 'axios';
-import { supabase } from './supabase';
-import { Platform } from 'react-native';
 
-// Use localhost for iOS and 10.0.2.2 for Android emulator
-const baseURL = Platform.select({
-  ios: 'http://localhost:3000/api',
-  android: 'http://10.0.2.2:3000/api',
-});
-
+// Using localhost for development
 const api = axios.create({
-  baseURL,
+  baseURL: 'http://localhost:3000/api',
   headers: {
     'Content-Type': 'application/json',
   },
-});
-
-// Add auth token to requests
-api.interceptors.request.use(async (config) => {
-  const { data: { session }, error } = await supabase.auth.getSession();
-  if (session?.access_token) {
-    config.headers.Authorization = `Bearer ${session.access_token}`;
-  }
-  return config;
 });
 
 export interface Note {
@@ -42,8 +26,13 @@ export interface NotesResponse {
 
 export const notesApi = {
   getNotes: async () => {
-    const { data } = await api.get<NotesResponse>('/notes');
-    return data.notes;
+    try {
+      const { data } = await api.get<NotesResponse>('/notes');
+      return data?.notes ?? [];
+    } catch (error) {
+      console.error('Error fetching notes:', error);
+      return [];
+    }
   },
 
   createNote: async (noteText: string) => {

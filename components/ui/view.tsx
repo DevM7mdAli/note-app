@@ -1,5 +1,5 @@
 import cn from "@/lib/utils";
-import { View, ViewProps } from "react-native";
+import { View, ViewProps, Text } from "react-native";
 import {
   SafeAreaView,
   SafeAreaViewProps,
@@ -7,17 +7,16 @@ import {
 
 const RootView = ({ children, className, ...props }: ViewProps) => {
   return (
-    <View className={cn("bg-primary", className)} {...props}>
+    <View className={cn("flex-1 bg-primary", className)} {...props}>
       {children}
     </View>
   );
 };
 
-
 export const RootSafeView = ({ children, className, ...props }: SafeAreaViewProps) => {
   return (
-    <SafeAreaView className={cn("bg-primary", className)} {...props}>
-      {children}
+    <SafeAreaView className={cn("flex-1 bg-primary", className)} {...props}>
+        {children}
     </SafeAreaView>
   );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Note } from './Note';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { Note as NoteComponent } from './Note';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notesApi } from '../lib/api-client';
 
@@ -18,10 +18,7 @@ export function AdminDashboard() {
     mutationFn: notesApi.deleteNote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
-    },
-    onError: (error: Error) => {
-      Alert.alert('Error', error.message);
-    },
+    }
   });
 
   // Update note mutation
@@ -29,10 +26,7 @@ export function AdminDashboard() {
     mutationFn: notesApi.updateNote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
-    },
-    onError: (error: Error) => {
-      Alert.alert('Error', error.message);
-    },
+    }
   });
 
   if (isLoading) {
@@ -50,7 +44,7 @@ export function AdminDashboard() {
       
       <ScrollView style={styles.notesList}>
         {notes?.map((note) => (
-          <Note
+          <NoteComponent
             key={note.id}
             id={note.id}
             text={note.note_text}
@@ -59,21 +53,8 @@ export function AdminDashboard() {
             onEdit={(id) => {
               const noteToEdit = notes.find(n => n.id === id);
               if (noteToEdit) {
-                Alert.prompt(
-                  'Edit Note',
-                  'Update the note text:',
-                  [
-                    { text: 'Cancel', style: 'cancel' },
-                    {
-                      text: 'Update',
-                      onPress: (text) => {
-                        if (text) updateNote.mutate({ id, noteText: text });
-                      },
-                    },
-                  ],
-                  'plain-text',
-                  noteToEdit.note_text
-                );
+                // Handle edit through the API
+                updateNote.mutate({ id, noteText: noteToEdit.note_text });
               }
             }}
             isAdmin

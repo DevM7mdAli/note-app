@@ -12,7 +12,7 @@ export default function Settings() {
       if (error) throw error;
       router.replace('/');
     } catch (error) {
-      Alert.alert('Error signing out', error.message);
+      Alert.alert('Error signing out', (error as Error).message);
     }
   };
 
