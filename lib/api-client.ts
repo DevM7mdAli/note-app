@@ -18,21 +18,32 @@ const api = axios.create({
 
 // Add auth interceptor to include the token as a cookie
 api.interceptors.request.use(async (config) => {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session?.access_token) {
-    const projectRef = process.env.EXPO_PUBLIC_SUPABASE_PROJECT_REF || 'your-project-ref';
-    const cookieValue = encodeURIComponent(JSON.stringify({
-      access_token: session.access_token,
-      token_type: "bearer",
-      expires_in: 3600,
-      expires_at: session.expires_at,
-      refresh_token: session.refresh_token,
-      user: session.user
-    }));
-    
-    config.headers['Cookie'] = `sb-${projectRef}-auth-token=${cookieValue}`;
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token) {
+      const projectRef = 'keeotpkdytsjgkufuybs';
+      
+      const authData = {
+        access_token: session.access_token,
+        token_type: "bearer",
+        expires_in: 3600,
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+        refresh_token: session.refresh_token,
+        user: session.user
+      };
+      
+      // Use btoa for base64 encoding in React Native
+      const cookieValue = `base64-${btoa(JSON.stringify(authData))}`;
+
+      // Set both cookie and authorization header for maximum compatibility
+      config.headers['Cookie'] = `sb-${projectRef}-auth-token=${cookieValue}`;
+      config.headers['Authorization'] = `Bearer ${session.access_token}`;
+    }
+    return config;
+  } catch (error) {
+    console.error('Error setting auth headers:', error);
+    return config;
   }
-  return config;
 }, (error) => {
   return Promise.reject(error);
 });
@@ -43,7 +54,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       console.error('Authentication error: Please log in again');
-      // Optionally redirect to login or refresh token
+      // Handle unauthorized by signing out
+      supabase.auth.signOut();
     } else if (error.code === 'ERR_NETWORK') {
       console.error(`Network error: Cannot connect to ${getBaseUrl()}`);
       console.error('Please ensure your Next.js server is running and accessible');
