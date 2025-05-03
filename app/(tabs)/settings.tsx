@@ -1,6 +1,6 @@
 import { View, Alert } from 'react-native';
 import { Button } from '@rneui/themed';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { useRouter } from 'expo-router';
 
 export default function Settings() {
@@ -10,7 +10,7 @@ export default function Settings() {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      router.replace('/');
+      router.replace('/(auth)');
     } catch (error) {
       Alert.alert('Error signing out', (error as Error).message);
     }

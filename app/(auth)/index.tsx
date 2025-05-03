@@ -1,21 +1,50 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Alert, Linking, View } from 'react-native'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { Button, Input } from '@rneui/themed'
+import { router } from 'expo-router'
+import { Session } from '@supabase/supabase-js'
 
 export default function Auth() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [authInfo, setAuthInfo] = useState({email: '' , password: ''})
   const [loading, setLoading] = useState(false)
+  const [session, setSession] = useState<Session | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      if (session?.user.id) {
+        router.replace('/(tabs)')
+      } else {
+        setLoading(false)
+      }
+    })
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+      if (session?.user.id) {
+        router.replace('/(tabs)')
+      } else {
+        setLoading(false)
+      }
+    })
+  }, [])
+  
+  
 
   async function signInWithEmail() {
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
+      email: authInfo.email,
+      password: authInfo.password,
     })
-    if (error) Alert.alert(error.message)
-    setLoading(false)
+    if (error){
+      Alert.alert(error.message)
+      setLoading(false)
+    } else {
+      setLoading(false)
+      router.replace('/(tabs)')
+    } 
   }
 
   return (
@@ -24,8 +53,8 @@ export default function Auth() {
         <Input
           label="Email"
           leftIcon={{ type: 'font-awesome', name: 'envelope' }}
-          onChangeText={(text) => setEmail(text)}
-          value={email}
+          onChangeText={(text) => setAuthInfo({...authInfo, email:text})}
+          value={authInfo.email}
           placeholder="email@address.com"
           autoCapitalize={'none'}
         />
@@ -34,8 +63,8 @@ export default function Auth() {
         <Input
           label="Password"
           leftIcon={{ type: 'font-awesome', name: 'lock' }}
-          onChangeText={(text) => setPassword(text)}
-          value={password}
+          onChangeText={(text) => setAuthInfo({...authInfo, password:text})}
+          value={authInfo.password}
           secureTextEntry={true}
           placeholder="Password"
           autoCapitalize={'none'}
